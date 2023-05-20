@@ -54,7 +54,7 @@ class _HomepageState extends State<Homepage> {
             itemBuilder: (context, index) {
               return ListTile(
                 leading: Image.asset(
-                  '../assets/songicon.png',
+                  'assets/songicon.png',
                   width: 48,
                   height: 48,
                 ),

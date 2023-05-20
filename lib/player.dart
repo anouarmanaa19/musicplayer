@@ -37,7 +37,7 @@ class _PlayerState extends State<Player> {
         children: [
           Center(
             child: Image.asset(
-              '../assets/photo.png',
+              'assets/photo.png',
               width: 420,
               height: 400,
             ),
@@ -56,27 +56,32 @@ class _PlayerState extends State<Player> {
             children: [
               IconButton(
                 icon: Image.asset(
-                  '../assets/back.png',
+                  'assets/back.png',
                   width: 80,
                   height: 80,
                 ),
                 onPressed: previousSong,
               ),
               IconButton(
-                icon: Image.asset(
-                  '../assets/play.png',
-                  width: 80,
-                  height: 80,
-                ),
-                onPressed: () async {
-                  await _player.setAudioSource(
-                      AudioSource.uri(Uri.parse(widget.songPath!)));
-                  await _player.play();
-                },
-              ),
+                  icon: Image.asset(
+                    'assets/play.png',
+                    width: 80,
+                    height: 80,
+                  ),
+                  onPressed: () async {
+                    if (_player.playing) {
+                      await _player.stop();
+                    } else {
+                      if (widget.songPath != null) {
+                        await _player.setAudioSource(
+                            AudioSource.uri(Uri.parse(widget.songPath!)));
+                        await _player.play();
+                      }
+                    }
+                  }),
               IconButton(
                 icon: Image.asset(
-                  '../assets/next.png',
+                  'assets/next.png',
                   width: 80,
                   height: 80,
                 ),
