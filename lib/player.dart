@@ -32,13 +32,6 @@ class _PlayerState extends State<Player> {
   }
 
   @override
-  void dispose() {
-    _player.stop();
-    _player.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -72,8 +65,14 @@ class _PlayerState extends State<Player> {
                   if (currentIndex > 0) {
                     currentIndex--;
                     String? uri = widget.songList![currentIndex].uri;
-                    await _player
-                        .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
+                    await _player.setAudioSource(AudioSource.uri(
+                        Uri.parse(uri!),
+                        tag: MediaItem(
+                            id: '${currentIndex - 1}',
+                            album: "NA",
+                            title: widget.songName,
+                            artUri: Uri.parse(
+                                'https://example.com/albumart.jpg'))));
                     await _player.play();
                     setState(() {
                       widget.currentIndex = currentIndex;
@@ -93,7 +92,6 @@ class _PlayerState extends State<Player> {
                           Uri.parse(widget.songPath!),
                           tag: MediaItem(
                               id: '${currentIndex}',
-                              // Metadata to display in the notification:
                               album: "NA",
                               title: widget.songName,
                               artUri: Uri.parse(
@@ -109,8 +107,14 @@ class _PlayerState extends State<Player> {
                   if (currentIndex < widget.songList!.length - 1) {
                     currentIndex++;
                     String? uri = widget.songList![currentIndex].uri;
-                    await _player
-                        .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
+                    await _player.setAudioSource(AudioSource.uri(
+                        Uri.parse(uri!),
+                        tag: MediaItem(
+                            id: '${currentIndex + 1}',
+                            album: "NA",
+                            title: widget.songName,
+                            artUri: Uri.parse(
+                                'https://example.com/albumart.jpg'))));
                     await _player.play();
                     setState(() {
                       widget.currentIndex = currentIndex;
