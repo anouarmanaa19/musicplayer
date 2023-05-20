@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 // ignore: must_be_immutable
 class Player extends StatefulWidget {
@@ -89,8 +89,15 @@ class _PlayerState extends State<Player> {
                     await _player.pause();
                   } else {
                     if (widget.songPath != null) {
-                      await _player.setAudioSource(
-                          AudioSource.uri(Uri.parse(widget.songPath!)));
+                      await _player.setAudioSource(AudioSource.uri(
+                          Uri.parse(widget.songPath!),
+                          tag: MediaItem(
+                              id: '${currentIndex}',
+                              // Metadata to display in the notification:
+                              album: "NA",
+                              title: widget.songName,
+                              artUri: Uri.parse(
+                                  'https://example.com/albumart.jpg'))));
                       await _player.play();
                     }
                   }
