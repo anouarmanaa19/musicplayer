@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 
 class Player extends StatefulWidget {
   final String songName;
-  final String songPath;
-  late AudioPlayer audioPlayer;
-  bool isPlaying = false;
+  final String? songPath;
 
   Player({required this.songName, required this.songPath});
 
@@ -14,29 +12,7 @@ class Player extends StatefulWidget {
 }
 
 class _PlayerState extends State<Player> {
-  late AudioPlayer audioPlayer;
-  bool isPlaying = false;
-
-  @override
-  void initState() {
-    super.initState();
-    audioPlayer = AudioPlayer();
-  }
-
-  Future<void> playSong(String path) async {
-    if (isPlaying) {
-      await audioPlayer.pause();
-      setState(() {
-        isPlaying = false;
-      });
-    } else {
-      await audioPlayer.play(path as Source);
-      setState(() {
-        isPlaying = true;
-      });
-    }
-  }
-
+  final AudioPlayer _player = AudioPlayer();
   void nextSong() {
     // Code to play the next song
   }
@@ -92,7 +68,10 @@ class _PlayerState extends State<Player> {
                   width: 80,
                   height: 80,
                 ),
-                onPressed: () => playSong(widget.songPath),
+                onPressed: () async {
+                  await _player.setAudioSource(
+                      AudioSource.uri(Uri.parse(widget.songPath!)));
+                },
               ),
               IconButton(
                 icon: Image.asset(
