@@ -35,13 +35,7 @@ class _PlayerState extends State<Player> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Center(
-            child: Image.asset(
-              'assets/photo.png',
-              width: 420,
-              height: 400,
-            ),
-          ),
+          Center(child: Icon(Icons.audio_file)),
           SizedBox(height: 20),
           Text(
             widget.songName,
@@ -55,11 +49,7 @@ class _PlayerState extends State<Player> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                icon: Image.asset(
-                  'assets/back.png',
-                  width: 80,
-                  height: 80,
-                ),
+                icon: Icon(Icons.skip_previous),
                 onPressed: () async {
                   String? uri = widget.songList![widget.currentIndex - 1].uri;
                   widget.currentIndex == widget.currentIndex - 1;
@@ -69,11 +59,7 @@ class _PlayerState extends State<Player> {
                 },
               ),
               IconButton(
-                  icon: Image.asset(
-                    'assets/play.png',
-                    width: 80,
-                    height: 80,
-                  ),
+                  icon: Icon(Icons.play_arrow),
                   onPressed: () async {
                     if (_player.playing) {
                       await _player.pause();
@@ -86,11 +72,7 @@ class _PlayerState extends State<Player> {
                     }
                   }),
               IconButton(
-                icon: Image.asset(
-                  'assets/next.png',
-                  width: 80,
-                  height: 80,
-                ),
+                icon: Icon(Icons.skip_next),
                 onPressed: () async {
                   String? uri = widget.songList![widget.currentIndex + 1].uri;
                   widget.currentIndex == widget.currentIndex + 1;
