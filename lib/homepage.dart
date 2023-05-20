@@ -3,13 +3,6 @@ import 'package:flutter/rendering.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:flutter/material.dart';
 
-class Song {
-  final String name;
-  final String path;
-
-  Song({required this.name, required this.path});
-}
-
 class Homepage extends StatefulWidget {
   Homepage({Key? key}) : super(key: key);
 
@@ -18,7 +11,6 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  List<Song> songs = [];
   final OnAudioQuery _audioQuery = OnAudioQuery();
   @override
   void initState() {
