@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+// ignore: must_be_immutable
 class Player extends StatefulWidget {
-  final String songName;
+  String songName;
   final String? songPath;
   final List<SongModel>? songList;
   int currentIndex;
@@ -27,6 +29,13 @@ class _PlayerState extends State<Player> {
   void initState() {
     super.initState();
     currentIndex = widget.currentIndex;
+  }
+
+  @override
+  void dispose() {
+    _player.stop();
+    _player.dispose();
+    super.dispose();
   }
 
   @override
@@ -68,6 +77,7 @@ class _PlayerState extends State<Player> {
                     await _player.play();
                     setState(() {
                       widget.currentIndex = currentIndex;
+                      widget.songName = widget.songList![currentIndex].title;
                     });
                   }
                 },
@@ -97,6 +107,7 @@ class _PlayerState extends State<Player> {
                     await _player.play();
                     setState(() {
                       widget.currentIndex = currentIndex;
+                      widget.songName = widget.songList![currentIndex].title;
                     });
                   }
                 },

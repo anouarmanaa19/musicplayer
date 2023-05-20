@@ -42,6 +42,7 @@ dependencies:
   audio_query: ^0.0.2
   on_audio_query: ^2.9.0
   just_audio: ^0.9.33
+  flutter_local_notifications: ^14.1.0
 
 dev_dependencies:
   flutter_test:
