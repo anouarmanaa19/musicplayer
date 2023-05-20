@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'homepage.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +42,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+
+  Future<void> requestStoragePermission() async {
+    final status = await Permission.storage.request();
+    if (status.isGranted) {
+      // Permission granted, you can access local storage files.
+    } else {
+      // Permission denied.
+    }
+  }
 
   void _incrementCounter() {
     setState(() {
