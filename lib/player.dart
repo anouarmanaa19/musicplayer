@@ -61,7 +61,8 @@ class _PlayerState extends State<Player> {
                   height: 80,
                 ),
                 onPressed: () async {
-                  String? uri = widget.songList![widget.currentIndex + -1].uri;
+                  String? uri = widget.songList![widget.currentIndex - 1].uri;
+                  widget.currentIndex == widget.currentIndex - 1;
                   await _player
                       .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
                   await _player.play();
@@ -92,6 +93,7 @@ class _PlayerState extends State<Player> {
                 ),
                 onPressed: () async {
                   String? uri = widget.songList![widget.currentIndex + 1].uri;
+                  widget.currentIndex == widget.currentIndex + 1;
                   await _player
                       .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
                   await _player.play();
