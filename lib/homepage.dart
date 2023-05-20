@@ -1,92 +1,110 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
-import 'package:musicplayer/player.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
-class Homepage extends StatefulWidget {
-  Homepage({Key? key}) : super(key: key);
+class Player extends StatefulWidget {
+  final String songName;
+  final String? songPath;
+  final List<SongModel>? songList;
+  int currentIndex;
+
+  Player({
+    required this.songName,
+    required this.songPath,
+    required this.songList,
+    required this.currentIndex,
+  });
 
   @override
-  _HomepageState createState() => _HomepageState();
+  State<Player> createState() => _PlayerState();
 }
 
-class _HomepageState extends State<Homepage> {
-  final OnAudioQuery _audioQuery = OnAudioQuery();
+class _PlayerState extends State<Player> {
+  final AudioPlayer _player = AudioPlayer();
+  int currentIndex = 0;
+
   @override
   void initState() {
     super.initState();
-    requestStoragePermission();
+    currentIndex = widget.currentIndex;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 103, 4, 242),
         title: Text(
-          'ServiceMusic',
+          widget.songName,
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Color.fromARGB(255, 103, 4, 242),
       ),
-      body: FutureBuilder<List<SongModel>>(
-        future: _audioQuery.querySongs(
-          sortType: null,
-          orderType: OrderType.ASC_OR_SMALLER,
-          uriType: UriType.EXTERNAL,
-          ignoreCase: true,
-        ),
-        builder: (context, item) {
-          if (item.data == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (item.data!.isEmpty) {
-            return const Center(
-              child: Text("pas d'audios"),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: item.data!.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                leading: Image.asset(
-                  'assets/songicon.png',
-                  width: 48,
-                  height: 48,
-                ),
-                title: Text(item.data![index].title),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Player(
-                          songName: item.data![index].title,
-                          songPath: item.data![index].uri,
-                          songList: item.data!,
-                          currentIndex: index),
-                    ),
-                  );
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Center(child: Icon(Icons.audio_file)),
+          SizedBox(height: 20),
+          Text(
+            widget.songName,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(Icons.skip_previous),
+                onPressed: () async {
+                  if (currentIndex > 0) {
+                    currentIndex--;
+                    String? uri = widget.songList![currentIndex].uri;
+                    await _player
+                        .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
+                    await _player.play();
+                    setState(() {
+                      widget.currentIndex = currentIndex;
+                    });
+                  }
                 },
-              );
-            },
-          );
-        },
+              ),
+              IconButton(
+                icon: Icon(Icons.play_arrow),
+                onPressed: () async {
+                  if (_player.playing) {
+                    await _player.pause();
+                  } else {
+                    if (widget.songPath != null) {
+                      await _player.setAudioSource(
+                          AudioSource.uri(Uri.parse(widget.songPath!)));
+                      await _player.play();
+                    }
+                  }
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.skip_next),
+                onPressed: () async {
+                  if (currentIndex < widget.songList!.length - 1) {
+                    currentIndex++;
+                    String? uri = widget.songList![currentIndex].uri;
+                    await _player
+                        .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
+                    await _player.play();
+                    setState(() {
+                      widget.currentIndex = currentIndex;
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
-  }
-
-  void requestStoragePermission() async {
-    if (!kIsWeb) {
-      bool permissionStatus = await _audioQuery.permissionsStatus();
-      if (!permissionStatus) {
-        await _audioQuery.permissionsRequest();
-      }
-
-      setState(() {});
-    }
   }
 }

@@ -6,13 +6,14 @@ class Player extends StatefulWidget {
   final String songName;
   final String? songPath;
   final List<SongModel>? songList;
-  final int currentIndex;
+  int currentIndex;
 
-  Player(
-      {required this.songName,
-      required this.songPath,
-      required this.songList,
-      required this.currentIndex});
+  Player({
+    required this.songName,
+    required this.songPath,
+    required this.songList,
+    required this.currentIndex,
+  });
 
   @override
   State<Player> createState() => _PlayerState();
@@ -20,6 +21,14 @@ class Player extends StatefulWidget {
 
 class _PlayerState extends State<Player> {
   final AudioPlayer _player = AudioPlayer();
+  int currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    currentIndex = widget.currentIndex;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,34 +60,45 @@ class _PlayerState extends State<Player> {
               IconButton(
                 icon: Icon(Icons.skip_previous),
                 onPressed: () async {
-                  String? uri = widget.songList![widget.currentIndex - 1].uri;
-                  widget.currentIndex == widget.currentIndex - 1;
-                  await _player
-                      .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
-                  await _player.play();
+                  if (currentIndex > 0) {
+                    currentIndex--;
+                    String? uri = widget.songList![currentIndex].uri;
+                    await _player
+                        .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
+                    await _player.play();
+                    setState(() {
+                      widget.currentIndex = currentIndex;
+                    });
+                  }
                 },
               ),
               IconButton(
-                  icon: Icon(Icons.play_arrow),
-                  onPressed: () async {
-                    if (_player.playing) {
-                      await _player.pause();
-                    } else {
-                      if (widget.songPath != null) {
-                        await _player.setAudioSource(
-                            AudioSource.uri(Uri.parse(widget.songPath!)));
-                        await _player.play();
-                      }
+                icon: Icon(Icons.play_arrow),
+                onPressed: () async {
+                  if (_player.playing) {
+                    await _player.pause();
+                  } else {
+                    if (widget.songPath != null) {
+                      await _player.setAudioSource(
+                          AudioSource.uri(Uri.parse(widget.songPath!)));
+                      await _player.play();
                     }
-                  }),
+                  }
+                },
+              ),
               IconButton(
                 icon: Icon(Icons.skip_next),
                 onPressed: () async {
-                  String? uri = widget.songList![widget.currentIndex + 1].uri;
-                  widget.currentIndex == widget.currentIndex + 1;
-                  await _player
-                      .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
-                  await _player.play();
+                  if (currentIndex < widget.songList!.length - 1) {
+                    currentIndex++;
+                    String? uri = widget.songList![currentIndex].uri;
+                    await _player
+                        .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
+                    await _player.play();
+                    setState(() {
+                      widget.currentIndex = currentIndex;
+                    });
+                  }
                 },
               ),
             ],
