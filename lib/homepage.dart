@@ -1,6 +1,6 @@
-import 'dart:io';
-import 'package:musicplayer/player.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:flutter/material.dart';
 
 class Song {
@@ -19,31 +19,11 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   List<Song> songs = [];
-
+  final OnAudioQuery _audioQuery = OnAudioQuery();
   @override
   void initState() {
     super.initState();
-    loadSongs();
-  }
-
-  Future<void> loadSongs() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final List<FileSystemEntity> files = directory.listSync();
-
-    List<Song> loadedSongs = [];
-
-    for (var file in files) {
-      if (file.path.endsWith('.mp3')) {
-        final String fileName = file.path.split('/').last;
-        loadedSongs.add(
-          Song(name: fileName, path: file.path),
-        );
-      }
-    }
-
-    setState(() {
-      songs = loadedSongs;
-    });
+    requestStoragePermission();
   }
 
   @override
@@ -56,37 +36,50 @@ class _HomepageState extends State<Homepage> {
         ),
         backgroundColor: Color.fromARGB(255, 103, 4, 242),
       ),
-      body: ListView.builder(
-        itemCount: songs.length,
-        itemBuilder: (context, index) {
-          final song = songs[index];
-          return Padding(
-            padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
-            child: ListTile(
-              leading: Image.asset(
-                '../assets/songicon.png',
-                width: 48,
-                height: 48,
-              ),
-              title: Text(
-                song.name,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Player(
-                      songName: song.name,
-                      songPath: song.path,
+      body: FutureBuilder<List<SongModel>>(
+          future: _audioQuery.querySongs(
+            sortType: null,
+            orderType: OrderType.ASC_OR_SMALLER,
+            uriType: UriType.EXTERNAL,
+            ignoreCase: true,
+          ),
+          builder: (context, item) {
+            if (item.data == null) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (item.data!.isEmpty) {
+              return const Center(
+                child: Text("pas d'audios"),
+              );
+            }
+
+            return ListView.builder(
+                itemCount: item.data!.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Image.asset(
+                      '../assets/songicon.png',
+                      width: 48,
+                      height: 48,
                     ),
-                  ),
-                );
-              },
-            ),
-          );
-        },
-      ),
+                    title: Text(item.data![index].title),
+                  );
+                });
+          }),
     );
+  }
+
+  void requestStoragePermission() async {
+    if (!kIsWeb) {
+      bool permissionStatus = await _audioQuery.permissionsStatus();
+      if (!permissionStatus) {
+        await _audioQuery.permissionsRequest();
+      }
+
+      setState(() {});
+    }
   }
 }
