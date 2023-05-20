@@ -64,9 +64,10 @@ class _HomepageState extends State<Homepage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => Player(
-                        songName: item.data![index].title,
-                        songPath: item.data![index].uri,
-                      ),
+                          songName: item.data![index].title,
+                          songPath: item.data![index].uri,
+                          songList: item.data!,
+                          currentIndex: index),
                     ),
                   );
                 },

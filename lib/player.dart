@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 class Player extends StatefulWidget {
   final String songName;
   final String? songPath;
+  final List<SongModel>? songList;
+  final int currentIndex;
 
-  Player({required this.songName, required this.songPath});
+  Player(
+      {required this.songName,
+      required this.songPath,
+      required this.songList,
+      required this.currentIndex});
 
   @override
   State<Player> createState() => _PlayerState();
@@ -13,13 +20,6 @@ class Player extends StatefulWidget {
 
 class _PlayerState extends State<Player> {
   final AudioPlayer _player = AudioPlayer();
-  void nextSong() {
-    // Code to play the next song
-  }
-
-  void previousSong() {
-    // Code to play the previous song
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +60,12 @@ class _PlayerState extends State<Player> {
                   width: 80,
                   height: 80,
                 ),
-                onPressed: previousSong,
+                onPressed: () async {
+                  String? uri = widget.songList![widget.currentIndex + -1].uri;
+                  await _player
+                      .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
+                  await _player.play();
+                },
               ),
               IconButton(
                   icon: Image.asset(
@@ -70,7 +75,7 @@ class _PlayerState extends State<Player> {
                   ),
                   onPressed: () async {
                     if (_player.playing) {
-                      await _player.stop();
+                      await _player.pause();
                     } else {
                       if (widget.songPath != null) {
                         await _player.setAudioSource(
@@ -85,7 +90,12 @@ class _PlayerState extends State<Player> {
                   width: 80,
                   height: 80,
                 ),
-                onPressed: nextSong,
+                onPressed: () async {
+                  String? uri = widget.songList![widget.currentIndex + 1].uri;
+                  await _player
+                      .setAudioSource(AudioSource.uri(Uri.parse(uri!)));
+                  await _player.play();
+                },
               ),
             ],
           ),
