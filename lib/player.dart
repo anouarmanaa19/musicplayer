@@ -71,6 +71,7 @@ class _PlayerState extends State<Player> {
                 onPressed: () async {
                   await _player.setAudioSource(
                       AudioSource.uri(Uri.parse(widget.songPath!)));
+                  await _player.play();
                 },
               ),
               IconButton(
