@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:musicplayer/player.dart';
 
 class PlayfromURL extends StatefulWidget {
   final VoidCallback? onDownloadCompleted;
+
   const PlayfromURL({
     Key? key,
     this.onDownloadCompleted,
@@ -27,6 +29,7 @@ class PlayfromURL extends StatefulWidget {
 class _PlayfromURLState extends State<PlayfromURL> {
   TextEditingController url = TextEditingController();
   double? _progress;
+  String? _downloadedFilePath;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,7 @@ class _PlayfromURLState extends State<PlayfromURL> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Telechargement audio en ligne',
+              'Téléchargement audio en ligne',
               style: TextStyle(
                 fontSize: 20,
               ),
@@ -51,29 +54,57 @@ class _PlayfromURLState extends State<PlayfromURL> {
               decoration: const InputDecoration(label: Text('Lien')),
             ),
             const SizedBox(height: 16),
-            _progress != null
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: () {
-                      FileDownloader.downloadFile(
-                          url: url.text.trim(),
-                          onProgress: (name, progress) {
-                            setState(() {
-                              _progress = progress;
-                            });
-                          },
-                          onDownloadCompleted: (value) {
-                            PlayfromURL.showToast(msg: value);
-                            setState(() {
-                              _progress = null;
-                            });
-                            widget.onDownloadCompleted?.call();
-                          });
-                    },
-                    child: const Text('Telecharger')),
+            if (_progress != null)
+              CircularProgressIndicator()
+            else if (_downloadedFilePath != null)
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Player(
+                        songName: 'musique telechargé',
+                        songPath: _downloadedFilePath,
+                        songList: null,
+                        currentIndex: 0,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Lire'),
+              )
+            else
+              ElevatedButton(
+                onPressed: () {
+                  _downloadFile();
+                },
+                child: const Text('Télécharger'),
+              ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _downloadFile() async {
+    setState(() {
+      _progress = 0.0;
+    });
+    FileDownloader.downloadFile(
+      url: url.text.trim(),
+      onProgress: (name, progress) {
+        setState(() {
+          _progress = progress;
+        });
+      },
+      onDownloadCompleted: (filePath) {
+        PlayfromURL.showToast(msg: 'Téléchargement terminé');
+        setState(() {
+          _progress = null;
+          _downloadedFilePath = filePath;
+        });
+        widget.onDownloadCompleted?.call();
+      },
     );
   }
 }
