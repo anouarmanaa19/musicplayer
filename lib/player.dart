@@ -24,11 +24,18 @@ class Player extends StatefulWidget {
 class _PlayerState extends State<Player> {
   final AudioPlayer _player = AudioPlayer();
   int currentIndex = 0;
+  bool isFavorite = false;
 
   @override
   void initState() {
     super.initState();
     currentIndex = widget.currentIndex;
+  }
+
+  void toggleFavorite() {
+    setState(() {
+      isFavorite = !isFavorite;
+    });
   }
 
   @override
@@ -122,6 +129,14 @@ class _PlayerState extends State<Player> {
                     });
                   }
                 },
+              ),
+              SizedBox(height: 20),
+              IconButton(
+                icon: Icon(
+                  Icons.favorite,
+                  color: isFavorite ? Colors.red : Colors.grey,
+                ),
+                onPressed: toggleFavorite,
               ),
             ],
           ),
