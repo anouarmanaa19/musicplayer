@@ -17,6 +17,15 @@ class DatabaseHelper {
     return _db!;
   }
 
+  Future<bool> isSongInFavorites(String songName) async {
+    final db = await this.db;
+    final count = Sqflite.firstIntValue(await db.rawQuery(
+      'SELECT COUNT(*) FROM Favorites WHERE songName = ?',
+      [songName],
+    ));
+    return count! > 0;
+  }
+
   Future<Database> initDb() async {
     final String databasesPath = await getDatabasesPath();
     final String path = join(databasesPath, 'favorites.db');

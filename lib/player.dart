@@ -46,8 +46,14 @@ class _PlayerState extends State<Player> {
         );
       });
     } else {
-      // Add to favorites
-      await dbHelper.insertFavorite(widget.songName, widget.songPath!);
+      final favorites = await dbHelper.getFavorites();
+      final existingSongs = favorites
+          .where((favorite) => favorite['songName'] == widget.songName)
+          .toList();
+
+      if (existingSongs.isEmpty) {
+        await dbHelper.insertFavorite(widget.songName, widget.songPath!);
+      }
     }
 
     setState(() {
@@ -149,9 +155,22 @@ class _PlayerState extends State<Player> {
               ),
               SizedBox(height: 20),
               IconButton(
-                icon: Icon(
-                  Icons.favorite,
-                  color: isFavorite ? Colors.red : Colors.grey,
+                icon: FutureBuilder<bool>(
+                  future: () async {
+                    final dbHelper = DatabaseHelper();
+                    return await dbHelper.isSongInFavorites(widget.songName);
+                  }(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final bool isSongInFavorites = snapshot.data!;
+                      return Icon(
+                        Icons.favorite,
+                        color: isSongInFavorites ? Colors.red : Colors.grey,
+                      );
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  },
                 ),
                 onPressed: toggleFavorite,
               ),
