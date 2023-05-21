@@ -77,7 +77,8 @@ class _HomepageState extends State<Homepage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => UrlScreen()),
+            // ignore: prefer_const_constructors
+            MaterialPageRoute(builder: (context) => PlayfromURL()),
           );
         },
         child: Icon(Icons.link),

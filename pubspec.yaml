@@ -44,6 +44,8 @@ dependencies:
   just_audio: ^0.9.33
   flutter_local_notifications: ^14.1.0
   just_audio_background: ^0.0.1-beta.10
+  flutter_file_downloader: ^1.1.2
+  fluttertoast: ^8.2.1
 
 dev_dependencies:
   flutter_test:

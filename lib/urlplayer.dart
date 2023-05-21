@@ -1,56 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-class UrlScreen extends StatefulWidget {
+class PlayfromURL extends StatefulWidget {
+  const PlayfromURL({
+    Key? key,
+  }) : super(key: key);
+
   @override
-  _UrlScreenState createState() => _UrlScreenState();
+  State<PlayfromURL> createState() => _PlayfromURLState();
+
+  static void showToast({required String msg}) {
+    Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.black54,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
 }
 
-class _UrlScreenState extends State<UrlScreen> {
-  final AudioPlayer _player = AudioPlayer();
-  TextEditingController _urlController = TextEditingController();
-
-  @override
-  void dispose() {
-    _player.dispose();
-    _urlController.dispose();
-    super.dispose();
-  }
-
-  void _submitUrl() async {
-    String url = _urlController.text;
-    await _player.setUrl(url);
-    await _player.play();
-  }
+class _PlayfromURLState extends State<PlayfromURL> {
+  TextEditingController url = TextEditingController();
+  double? _progress;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('URL Input'),
-      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: _urlController,
-              decoration: InputDecoration(
-                labelText: 'URL',
+            const Text(
+              'Telechargement audio en ligne',
+              style: TextStyle(
+                fontSize: 20,
               ),
+              textAlign: TextAlign.center,
             ),
-            SizedBox(height: 16.0),
-            IconButton(
-              icon: Icon(Icons.play_arrow),
-              onPressed: _submitUrl,
+            const SizedBox(
+              height: 20,
             ),
-            IconButton(
-              icon: Icon(Icons.pause),
-              onPressed: () async {
-                _player.pause();
-              },
+            TextField(
+              controller: url,
+              decoration: const InputDecoration(label: Text('Lien')),
             ),
+            const SizedBox(height: 16),
+            _progress != null
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: () {
+                      FileDownloader.downloadFile(
+                          url: url.text.trim(),
+                          onProgress: (name, progress) {
+                            setState(() {
+                              _progress = progress;
+                            });
+                          },
+                          onDownloadCompleted: (value) {
+                            PlayfromURL.showToast(msg: value);
+                            setState(() {
+                              _progress = null;
+                            });
+                          });
+                    },
+                    child: const Text('Telecharger')),
           ],
         ),
       ),
