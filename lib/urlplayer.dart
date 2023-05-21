@@ -65,6 +65,9 @@ class _PlayfromURLState extends State<PlayfromURL> {
                             setState(() {
                               _progress = null;
                             });
+
+                            Navigator.popUntil(
+                                context, (route) => route.isFirst);
                           });
                     },
                     child: const Text('Telecharger')),
