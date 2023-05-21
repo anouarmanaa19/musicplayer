@@ -3,6 +3,8 @@ import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
+import 'dbhelper.dart';
+
 // ignore: must_be_immutable
 class Player extends StatefulWidget {
   String songName;
@@ -32,7 +34,22 @@ class _PlayerState extends State<Player> {
     currentIndex = widget.currentIndex;
   }
 
-  void toggleFavorite() {
+  void toggleFavorite() async {
+    final dbHelper = DatabaseHelper();
+
+    if (isFavorite) {
+      await dbHelper.db.then((db) {
+        db.delete(
+          'Favorites',
+          where: 'songName = ?',
+          whereArgs: [widget.songName],
+        );
+      });
+    } else {
+      // Add to favorites
+      await dbHelper.insertFavorite(widget.songName, widget.songPath!);
+    }
+
     setState(() {
       isFavorite = !isFavorite;
     });

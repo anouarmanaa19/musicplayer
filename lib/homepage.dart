@@ -6,6 +6,8 @@ import 'package:musicplayer/urlplayer.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:flutter/material.dart';
 
+import 'favourites.dart';
+
 class Homepage extends StatefulWidget {
   Homepage({Key? key}) : super(key: key);
 
@@ -42,6 +44,22 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.favorite,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FavoritesScreen(),
+                ),
+              );
+            },
+          ),
+        ],
         title: Text(
           'ServiceMusic',
           style: TextStyle(color: Colors.white),

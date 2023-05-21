@@ -98,7 +98,6 @@ class _PlayfromURLState extends State<PlayfromURL> {
           _progress = null;
           _downloadedFilePath = value;
         });
-        widget.onDownloadCompleted?.call();
       },
     );
   }
