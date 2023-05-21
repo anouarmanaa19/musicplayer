@@ -91,7 +91,7 @@ class _PlayerState extends State<Player> {
                       await _player.setAudioSource(AudioSource.uri(
                           Uri.parse(widget.songPath!),
                           tag: MediaItem(
-                              id: '${currentIndex}',
+                              id: '${currentIndex - 2}',
                               album: "NA",
                               title: widget.songName,
                               artUri: Uri.parse(
@@ -110,7 +110,7 @@ class _PlayerState extends State<Player> {
                     await _player.setAudioSource(AudioSource.uri(
                         Uri.parse(uri!),
                         tag: MediaItem(
-                            id: '${currentIndex + 1}',
+                            id: '${currentIndex + 2}',
                             album: "NA",
                             title: widget.songName,
                             artUri: Uri.parse(
