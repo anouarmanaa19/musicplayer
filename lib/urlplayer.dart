@@ -68,9 +68,6 @@ class _PlayfromURLState extends State<PlayfromURL> {
                               _progress = null;
                             });
                             widget.onDownloadCompleted?.call();
-
-                            Navigator.popUntil(
-                                context, (route) => route.isFirst);
                           });
                     },
                     child: const Text('Telecharger')),
