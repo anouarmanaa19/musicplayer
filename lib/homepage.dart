@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:musicplayer/player.dart';
+import 'package:musicplayer/urlplayer.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:flutter/material.dart';
 
@@ -71,6 +72,15 @@ class _HomepageState extends State<Homepage> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => UrlScreen()),
+          );
+        },
+        child: Icon(Icons.link),
       ),
     );
   }
