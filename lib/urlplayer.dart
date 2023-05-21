@@ -92,11 +92,11 @@ class _PlayfromURLState extends State<PlayfromURL> {
           _progress = progress;
         });
       },
-      onDownloadCompleted: (filePath) {
-        PlayfromURL.showToast(msg: 'Téléchargement terminé');
+      onDownloadCompleted: (value) {
+        PlayfromURL.showToast(msg: value);
         setState(() {
           _progress = null;
-          _downloadedFilePath = filePath;
+          _downloadedFilePath = value;
         });
         widget.onDownloadCompleted?.call();
       },
