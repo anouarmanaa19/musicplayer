@@ -14,10 +14,27 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   final OnAudioQuery _audioQuery = OnAudioQuery();
+  // ignore: unused_field
+  List<SongModel>? _musicList;
+
   @override
   void initState() {
     super.initState();
     requestStoragePermission();
+    _refreshMusicList();
+  }
+
+  Future<void> _refreshMusicList() async {
+    List<SongModel> musicList = await _audioQuery.querySongs(
+      sortType: null,
+      orderType: OrderType.ASC_OR_SMALLER,
+      uriType: UriType.EXTERNAL,
+      ignoreCase: true,
+    );
+
+    setState(() {
+      _musicList = musicList;
+    });
   }
 
   @override
@@ -30,55 +47,46 @@ class _HomepageState extends State<Homepage> {
         ),
         backgroundColor: Color.fromARGB(255, 103, 4, 242),
       ),
-      body: FutureBuilder<List<SongModel>>(
-        future: _audioQuery.querySongs(
-          sortType: null,
-          orderType: OrderType.ASC_OR_SMALLER,
-          uriType: UriType.EXTERNAL,
-          ignoreCase: true,
-        ),
-        builder: (context, item) {
-          if (item.data == null) {
-            return const Center(
+      body: _musicList == null
+          ? const Center(
               child: CircularProgressIndicator(),
-            );
-          }
-
-          if (item.data!.isEmpty) {
-            return const Center(
-              child: Text("pas d'audios"),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: item.data!.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                leading: Icon(Icons.music_note),
-                title: Text(item.data![index].title),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Player(
-                          songName: item.data![index].title,
-                          songPath: item.data![index].uri,
-                          songList: item.data!,
-                          currentIndex: index),
-                    ),
-                  );
-                },
-              );
-            },
-          );
-        },
-      ),
+            )
+          : _musicList!.isEmpty
+              ? const Center(
+                  child: Text("pas d'audios"),
+                )
+              : ListView.builder(
+                  itemCount: _musicList!.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Icon(Icons.music_note),
+                      title: Text(_musicList![index].title),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Player(
+                              songName: _musicList![index].title,
+                              songPath: _musicList![index].uri,
+                              songList: _musicList!,
+                              currentIndex: index,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
             // ignore: prefer_const_constructors
-            MaterialPageRoute(builder: (context) => PlayfromURL()),
+            MaterialPageRoute(
+              builder: (context) => PlayfromURL(
+                onDownloadCompleted: _refreshMusicList,
+              ),
+            ),
           );
         },
         child: Icon(Icons.link),

@@ -3,8 +3,10 @@ import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class PlayfromURL extends StatefulWidget {
+  final VoidCallback? onDownloadCompleted;
   const PlayfromURL({
     Key? key,
+    this.onDownloadCompleted,
   }) : super(key: key);
 
   @override
@@ -65,6 +67,7 @@ class _PlayfromURLState extends State<PlayfromURL> {
                             setState(() {
                               _progress = null;
                             });
+                            widget.onDownloadCompleted?.call();
 
                             Navigator.popUntil(
                                 context, (route) => route.isFirst);
